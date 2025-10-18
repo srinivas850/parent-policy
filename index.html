@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>University Policies AI Assistant for Parents</title>
+  <style>
+    /* Reset + Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url("https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1500&q=80") 
+                  no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      font-weight: 600;
+    }
+    h2 {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      letter-spacing: 1px;
+      color: #ccc;
+    }
+
+    /* Card Box */
+    .card {
+      background: rgba(15, 25, 35, 0.6);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      width: 100%;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    /* Form */
+    #query-form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      width: 100%;
+    }
+    #question {
+      flex: 1;
+      padding: 0.9rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    #question::placeholder {
+      color: #bbb;
+    }
+    #submit-btn {
+      padding: 0.9rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #0d6efd, #00c6ff);
+      color: #fff;
+      font-weight: bold;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+    #submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px #00c6ff, 0 0 25px #0d6efd;
+    }
+
+    /* Loading & Answer */
+    #loading {
+      font-style: italic;
+      color: #aaa;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+    #answer {
+      margin-top: 1rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.5);
+      border-radius: 10px;
+      min-height: 120px;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #e0e0e0;
+      box-shadow: 0 0 20px rgba(0, 224, 255, 0.15);
+    }
+
+    /* Footer icons */
+    .footer {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    .footer a {
+      color: #ccc;
+      font-size: 1.2rem;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .footer a:hover {
+      color: #00c6ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>University Policies AI Assistant</h1>
+  <h2>Ask Questions About Policies</h2>
+
+  <div class="card">
+    <form id="query-form">
+      <input type="text" id="question" placeholder="Ask a question..." required />
+      <button type="submit" id="submit-btn">Ask</button>
+    </form>
+    <div id="loading" style="display:none;">Loading answer...</div>
+    <div id="answer"></div>
+  </div>
+
+  <div class="footer">
+    <a href="#">&#xf16d;</a>
+    <a href="#">&#xf09a;</a>
+    <a href="#">&#xf099;</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('query-form');
+    const questionInput = document.getElementById('question');
+    const answerDiv = document.getElementById('answer');
+    const loadingDiv = document.getElementById('loading');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const question = questionInput.value.trim();
+      if (!question) return;
+
+      answerDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const response = await fetch('/api/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question })
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        answerDiv.textContent = data.answer || 'No answer returned.';
+      } catch (error) {
+        answerDiv.textContent = 'Error: ' + error.message;
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
